@@ -389,6 +389,42 @@ img { display: block; max-width: 100%; }
     100% { transform: translate(-30px, 20px) scale(1.1); }
 }
 
+/* ── SCROLL INDICATOR ────────────────────────────────── */
+.hero-scroll-indicator {
+    position: absolute;
+    right: 28px;
+    bottom: 80px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeIn 0.8s var(--ease-out-expo) 1.8s forwards;
+}
+.hero-scroll-indicator .scroll-text {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--white);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+}
+.hero-scroll-indicator .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--white), transparent);
+    animation: scrollLineAnim 2s infinite;
+}
+
+@keyframes scrollLineAnim {
+    0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+    50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+    50.1% { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+    100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+
 /* ══════════════════════════════════════════════════════════
    ABOUT PREVIEW SECTION
    ══════════════════════════════════════════════════════════ */
@@ -2095,4 +2131,42 @@ img { display: block; max-width: 100%; }
 .circular-gallery:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 4px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   EXTRA MOBILE FIXES
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    html, body {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+    
+    /* OptionWheel adjustments for mobile */
+    .option-wheel {
+        --ow-font-size: 1.8rem !important;
+        --ow-inset: 20px !important;
+    }
+    #projectWheelContainer {
+        height: 60vh !important;
+        min-height: 400px;
+    }
+    
+    /* Services Gallery adjust height */
+    #circularGalleryContainer {
+        height: 400px !important;
+    }
+    
+    /* FAQ Section */
+    .faq-contact-container {
+        gap: 60px;
+    }
+    
+    /* Hero Section Fixes */
+    .hero-scroll-indicator {
+        bottom: 50px;
+        right: 16px;
+        transform: scale(0.7);
+        transform-origin: bottom right;
+    }
 }

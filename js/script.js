@@ -464,7 +464,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'nexoresha-perfume',
             'nexoresha-landing',
             'nexoresha-clone',
-            'codenova'
+            'codenova',
+            'airsketch-ai',
+            'nike-showcase'
         ];
 
         new OptionWheel(wheelContainer, {
@@ -476,7 +478,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Nexoresha Perfume Website',
                 'Nexoresha Landing Page',
                 'Nexoresha Clone Website',
-                'CodeNova Coding Platform'
+                'CodeNova Coding Platform',
+                'AirSketch AI',
+                'Nike Interactive Product Showcase'
             ],
             side: 'right', // The user requested it on the right side
             fontSize: 4.5, // "big"
