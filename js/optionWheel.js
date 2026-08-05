@@ -43,6 +43,14 @@ class OptionWheel {
         this.initDOM();
         this.bindEvents();
         
+        // Dynamic resize handler for auto-layout responsiveness
+        this.onResize = () => {
+            this.remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            this.rowH = Math.max(this.fontSize * this.spacing * this.remPx, 1);
+            this.runFrame(performance.now(), true);
+        };
+        window.addEventListener('resize', this.onResize);
+        
         // Force an initial update to lay out properly
         this.runFrame(performance.now(), true);
     }

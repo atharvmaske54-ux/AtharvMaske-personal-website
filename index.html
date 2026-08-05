@@ -48,16 +48,48 @@
             <nav class="hero-nav" id="heroNav">
                 <div class="nav-left"><span class="nav-brand">ATHARV MASKE</span></div>
                 <div class="nav-center">
-                    <a href="#" class="nav-link active" id="navHome">Home</a>
-                    <a href="#" class="nav-link" id="navAbout">About</a>
-                    <a href="#" class="nav-link" id="navProjects">Projects</a>
-                    <a href="#" class="nav-link" id="navContact">Contact</a>
+                    <a href="#hero" class="nav-link active" id="navHome">Home</a>
+                    <a href="#aboutPreview" class="nav-link" id="navAbout">About</a>
+                    <a href="#bestProjectsSection" class="nav-link" id="navProjects">Projects</a>
+                    <a href="#faqContactSection" class="nav-link" id="navContact">Contact</a>
                 </div>
                 <div class="nav-right">
-                    <a href="mailto:atharvmaske@email.com" class="nav-email">MAIL@ATHARV.DEV</a>
-                    <button class="menu-icon" id="menuIcon" aria-label="Menu"><span></span><span></span></button>
+                    <a href="mailto:atharvmaske54@gmail.com" class="nav-email">MAIL@ATHARV.DEV</a>
+                    <button class="menu-icon" id="menuIcon" aria-label="Toggle Menu" aria-expanded="false" aria-controls="mobileDrawer"><span></span><span></span></button>
                 </div>
             </nav>
+
+            <!-- ── MOBILE SLIDE-IN NAVIGATION DRAWER ── -->
+            <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+                <div class="drawer-backdrop" id="drawerBackdrop"></div>
+                <div class="drawer-panel">
+                    <div class="drawer-header">
+                        <span class="drawer-brand">ATHARV MASKE</span>
+                        <button class="drawer-close" id="drawerClose" aria-label="Close menu">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <nav class="drawer-nav">
+                        <a href="#hero" class="drawer-link active">Home</a>
+                        <a href="#aboutPreview" class="drawer-link">About</a>
+                        <a href="#principlesSection" class="drawer-link">Principles</a>
+                        <a href="#servicesSection" class="drawer-link">Services</a>
+                        <a href="#bestProjectsSection" class="drawer-link">Projects</a>
+                        <a href="#faqContactSection" class="drawer-link">Contact</a>
+                    </nav>
+                    <div class="drawer-footer">
+                        <a href="mailto:atharvmaske54@gmail.com" class="drawer-email">MAIL@ATHARV.DEV</a>
+                        <div class="drawer-socials">
+                            <a href="https://github.com/atharvmaske54-ux" target="_blank" rel="noopener noreferrer" class="drawer-social">GH</a>
+                            <a href="https://www.linkedin.com/in/atharv-vasant-maske-35349a3b4?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer" class="drawer-social">LI</a>
+                            <a href="https://wa.me/918169109515" target="_blank" rel="noopener noreferrer" class="drawer-social">WA</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="hero-image-wrapper">
                 <div class="hero-image-container" id="heroImageContainer">
                     <!-- Base layer: sunglasses photo (always visible) -->
@@ -160,7 +192,7 @@
             <div class="principles-grid">
                 <!-- Top Row -->
                 <div class="bento-card card-transparency">
-                    <img src="assets/transparency.png" alt="Transparency" class="bento-bg">
+                    <img src="assets/transparency.png" alt="Transparency" class="bento-bg" loading="lazy">
                     <div class="bento-overlay"></div>
                     <div class="bento-content center-content text-light">
                         <h3>Transparency</h3>
@@ -169,7 +201,7 @@
                 </div>
 
                 <div class="bento-card card-smart">
-                    <img src="assets/smart_aesthetics.png" alt="Smart Aesthetics" class="bento-bg">
+                    <img src="assets/smart_aesthetics.png" alt="Smart Aesthetics" class="bento-bg" loading="lazy">
                     <div class="bento-content top-left-content text-muted">
                         <p>Not beauty for its own sake, but storytelling and impact</p>
                     </div>
@@ -198,7 +230,7 @@
                 </div>
 
                 <div class="bento-card card-value">
-                    <img src="assets/value_driven.png" alt="Value Driven" class="bento-bg">
+                    <img src="assets/value_driven.png" alt="Value Driven" class="bento-bg" loading="lazy">
                     <div class="bento-content bottom-left-content text-light">
                         <h4>VALUE-DRIVEN DESIGN</h4>
                         <p>visuals serve your goals</p>
@@ -207,7 +239,7 @@
 
                 <div class="bento-col-stacked">
                     <div class="bento-card card-deadline">
-                        <img src="assets/vr_deadline.png" alt="VR Deadline" class="bento-bg">
+                        <img src="assets/vr_deadline.png" alt="VR Deadline" class="bento-bg" loading="lazy">
                         <div class="bento-content top-left-content text-light">
                             <span class="time-tag">12:00</span>
                         </div>

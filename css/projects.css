@@ -12,21 +12,22 @@ body {
 
 .project-close-btn {
     position: fixed;
-    top: 30px;
-    right: 30px;
+    top: clamp(16px, 3vw, 30px);
+    right: clamp(16px, 3vw, 30px);
     z-index: 10000;
-    width: 50px;
-    height: 50px;
+    width: clamp(44px, 4.5vw, 52px);
+    height: clamp(44px, 4.5vw, 52px);
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.06);
     color: #F8FAFC;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.15);
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .project-close-btn:hover {
@@ -37,6 +38,7 @@ body {
 
 .projects-container {
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
@@ -54,6 +56,7 @@ body {
 
 .project-showcase-item {
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
     display: flex;
     scroll-snap-align: start;
@@ -75,7 +78,7 @@ body {
 .ps-vertical-label {
     transform: rotate(-90deg);
     color: #111111;
-    font-size: clamp(3rem, 6vw, 6rem);
+    font-size: clamp(2.5rem, 5.5vw, 6rem);
     font-family: var(--font-heading);
     font-weight: 900;
     white-space: nowrap;
@@ -88,7 +91,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: clamp(20px, 3.5vw, 40px);
     position: relative;
     z-index: 1;
 }
@@ -99,8 +102,8 @@ body {
     max-width: 1000px;
     aspect-ratio: 16/10;
     background: rgba(255,255,255,0.08);
-    border-radius: 24px;
-    padding: 12px;
+    border-radius: clamp(16px, 2.5vw, 24px);
+    padding: clamp(8px, 1.2vw, 14px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -118,12 +121,12 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 16px;
+    border-radius: clamp(10px, 1.5vw, 16px);
 }
 
 .ps-pill-buttons {
     position: absolute;
-    bottom: 40px;
+    bottom: clamp(20px, 3vw, 40px);
     display: flex;
     gap: 15px;
     opacity: 0;
@@ -137,13 +140,18 @@ body {
 }
 
 .ps-pill-btn {
-    background: rgba(5,5,5,0.7);
+    background: rgba(5,5,5,0.75);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: #F8FAFC;
-    padding: 12px 28px;
+    padding: clamp(10px, 1.5vw, 14px) clamp(20px, 2.5vw, 32px);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50px;
-    font-weight: 500;
-    font-size: 0.95rem;
+    font-weight: 600;
+    font-size: clamp(0.85rem, 1.1vw, 0.95rem);
     border: 1px solid rgba(255,255,255,0.2);
     transition: all 0.3s ease;
 }
@@ -159,15 +167,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 40px 40px 0;
+    padding: clamp(20px, 3.5vw, 40px) clamp(20px, 3.5vw, 40px) clamp(20px, 3.5vw, 40px) 0;
     position: relative;
     z-index: 2;
 }
 
 .ps-details-card {
     background: linear-gradient(135deg, #FFF7ED, #FDBA74, #F97316);
-    border-radius: 24px;
-    padding: 40px;
+    border-radius: clamp(16px, 2.5vw, 24px);
+    padding: clamp(24px, 3.5vw, 40px);
     color: #111111;
     width: 100%;
     display: flex;
@@ -182,16 +190,16 @@ body {
 
 .ps-title {
     font-family: 'Playfair Display', var(--font-heading), serif;
-    font-size: clamp(2rem, 2.5vw, 3rem);
+    font-size: clamp(1.6rem, 2.4vw, 3rem);
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.15;
     margin: 0;
     letter-spacing: -1px;
 }
 
 .ps-desc {
-    font-size: 1rem;
-    color: rgba(17,17,17,0.75);
+    font-size: clamp(0.9rem, 1.1vw, 1rem);
+    color: rgba(17,17,17,0.8);
     line-height: 1.6;
     margin: 0;
 }
@@ -202,32 +210,37 @@ body {
     gap: 15px;
     margin-top: 10px;
     padding-top: 20px;
-    border-top: 1px solid rgba(17,17,17,0.1);
+    border-top: 1px solid rgba(17,17,17,0.15);
 }
 
 .ps-meta-label {
     font-weight: 800;
-    font-size: 0.75rem;
+    font-size: clamp(0.7rem, 0.8vw, 0.75rem);
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: rgba(17,17,17,0.5);
+    color: rgba(17,17,17,0.6);
     display: block;
     margin-bottom: 5px;
 }
 
 .ps-meta-value {
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: clamp(0.85rem, 1vw, 0.95rem);
 }
 
 
-/* ── RESPONSIVE DESIGN ────────────────────────────────────── */
+/* ── RESPONSIVE AUTO LAYOUT ────────────────────────────────────── */
 @media (max-width: 1024px) {
+    .projects-container {
+        scroll-snap-type: none;
+    }
     .project-showcase-item {
         flex-direction: column;
-        padding: 80px 40px 40px;
+        padding: clamp(70px, 10vw, 90px) clamp(20px, 4vw, 40px) clamp(30px, 5vw, 50px);
         height: auto;
         min-height: 100vh;
+        min-height: 100dvh;
+        scroll-snap-align: none;
     }
     
     .ps-left {
@@ -244,25 +257,43 @@ body {
     
     .ps-center {
         width: 100%;
-        padding: 0 0 40px 0;
+        padding: 0 0 30px 0;
+    }
+
+    .ps-image-card {
+        aspect-ratio: 16/10;
+        max-height: 55vh;
+    }
+    
+    .ps-pill-buttons {
+        opacity: 1;
+        transform: translateY(0);
+        bottom: 20px;
     }
     
     .ps-right {
         width: 100%;
         padding: 0;
     }
+
+    .ps-details-card {
+        max-height: none;
+    }
 }
 
 @media (max-width: 768px) {
     .project-showcase-item {
-        padding: 80px 20px 40px;
+        padding: 70px 16px 32px;
     }
     .ps-vertical-label {
-        font-size: 3rem;
+        font-size: clamp(2rem, 8vw, 3rem);
     }
     .ps-pill-buttons {
-        opacity: 1;
-        transform: translateY(0);
-        bottom: 20px;
+        bottom: 14px;
+        gap: 10px;
+    }
+    .ps-pill-btn {
+        padding: 8px 18px;
+        font-size: 0.85rem;
     }
 }

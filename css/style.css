@@ -823,25 +823,25 @@ img { display: block; max-width: 100%; }
     line-height: 1;
 }
 
-/* Specific Grid layout */
+/* Specific Grid layout - Responsive Auto Layout */
 .card-transparency {
     grid-column: span 3;
-    height: 400px;
+    min-height: clamp(280px, 35vh, 420px);
 }
 
 .card-smart {
     grid-column: span 3;
-    height: 400px;
+    min-height: clamp(280px, 35vh, 420px);
 }
 
 .card-honesty {
     grid-column: span 2;
-    height: 300px;
+    min-height: clamp(220px, 25vh, 320px);
 }
 
 .card-value {
     grid-column: span 2;
-    height: 300px;
+    min-height: clamp(220px, 25vh, 320px);
 }
 
 .bento-col-stacked {
@@ -849,7 +849,7 @@ img { display: block; max-width: 100%; }
     display: flex;
     flex-direction: column;
     gap: 15px;
-    height: 300px;
+    min-height: clamp(220px, 25vh, 320px);
 }
 
 .card-deadline {
@@ -2134,39 +2134,300 @@ img { display: block; max-width: 100%; }
 }
 
 /* ══════════════════════════════════════════════════════════
-   EXTRA MOBILE FIXES
+   MOBILE SLIDE-IN NAVIGATION DRAWER STYLES
    ══════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+.mobile-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    visibility: hidden;
+    transition: visibility 0.4s ease;
+}
+
+.mobile-drawer.open {
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.drawer-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out-expo);
+}
+
+.mobile-drawer.open .drawer-backdrop {
+    opacity: 1;
+}
+
+.drawer-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(380px, 85vw);
+    background: rgba(15, 15, 15, 0.96);
+    border-left: 1px solid var(--border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding: clamp(24px, 4vw, 40px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transform: translateX(100%);
+    transition: transform 0.4s var(--ease-out-expo);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.6);
+    z-index: 2;
+}
+
+.mobile-drawer.open .drawer-panel {
+    transform: translateX(0);
+}
+
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.drawer-brand {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--white);
+}
+
+.drawer-close {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.drawer-close:hover {
+    background: var(--white);
+    color: var(--bg);
+    transform: scale(1.05);
+}
+
+.drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 32px 0;
+}
+
+.drawer-link {
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-weight: 700;
+    color: var(--muted);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.drawer-link:hover, .drawer-link.active {
+    color: var(--white);
+    transform: translateX(8px);
+}
+
+.drawer-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-light);
+}
+
+.drawer-email {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+}
+
+.drawer-socials {
+    display: flex;
+    gap: 12px;
+}
+
+.drawer-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--white);
+    transition: all 0.3s ease;
+}
+
+.drawer-social:hover {
+    background: var(--white);
+    color: var(--bg);
+    transform: translateY(-2px);
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPREHENSIVE RESPONSIVE BREAKPOINTS (AUTO LAYOUT SYSTEM)
+   ══════════════════════════════════════════════════════════ */
+
+/* 1. Ultra Wide Displays (1920px+) */
+@media (min-width: 1920px) {
+    .hero-card, .about-container, .container, .faq-contact-container, .footer-container {
+        max-width: 1600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .principles-main {
+        max-width: 1500px;
+    }
+}
+
+/* 2. Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+    .hero-card { max-width: 1380px; }
+}
+
+/* 3. Laptop (1024px - 1439px) */
+@media (max-width: 1439px) {
+    .principles-grid {
+        gap: 15px;
+    }
+}
+
+/* 4. Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .hero-nav .nav-center {
+        display: none;
+    }
+    .hero-nav .nav-email {
+        display: none;
+    }
+    .principles-section {
+        flex-direction: column;
+        padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 40px);
+    }
+    .principles-side {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .principles-side-text {
+        position: static;
+        transform: none;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+    .principles-main {
+        width: 100%;
+    }
+    .principles-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .card-transparency, .card-smart, .card-honesty, .card-value, .bento-col-stacked {
+        grid-column: span 1;
+    }
+    .best-projects-section {
+        flex-direction: column;
+        padding: clamp(40px, 6vw, 80px) 0;
+    }
+    .projects-side-title {
+        width: 100%;
+        justify-content: flex-start;
+        padding-left: clamp(20px, 4vw, 40px);
+        margin-bottom: 30px;
+    }
+    .rotated-title-sticky {
+        position: relative;
+        top: 0;
+        transform: none;
+    }
+    .rotated-title {
+        transform: none;
+        flex-direction: row;
+        gap: 15px;
+    }
+    .projects-main-content {
+        width: 100%;
+    }
+}
+
+/* 5. Large Mobile (481px - 767px) */
+@media (max-width: 767px) {
     html, body {
         max-width: 100vw;
         overflow-x: hidden;
     }
-    
-    /* OptionWheel adjustments for mobile */
-    .option-wheel {
-        --ow-font-size: 1.8rem !important;
-        --ow-inset: 20px !important;
+    .hero {
+        padding: 12px;
+    }
+    .hero-card {
+        border-radius: 14px;
+    }
+    .hero-image-wrapper {
+        margin: 0 10px 10px;
+        aspect-ratio: 3 / 4;
+    }
+    .principles-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .contact-block {
+        padding: clamp(24px, 5vw, 40px) clamp(16px, 4vw, 24px);
     }
     #projectWheelContainer {
-        height: 60vh !important;
-        min-height: 400px;
+        height: clamp(380px, 60vh, 500px) !important;
     }
-    
-    /* Services Gallery adjust height */
     #circularGalleryContainer {
-        height: 400px !important;
+        height: clamp(350px, 55vh, 450px) !important;
     }
-    
-    /* FAQ Section */
-    .faq-contact-container {
-        gap: 60px;
-    }
-    
-    /* Hero Section Fixes */
     .hero-scroll-indicator {
-        bottom: 50px;
-        right: 16px;
+        bottom: 40px;
+        right: 14px;
         transform: scale(0.7);
         transform-origin: bottom right;
+    }
+}
+
+/* 6. Mobile (320px - 480px) */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: clamp(1.8rem, 12vw, 3.2rem);
+    }
+    .counter-number {
+        font-size: 1.6rem;
+    }
+    .about-statement {
+        font-size: 1.05rem;
+    }
+    .about-header-row {
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+    }
+    .faq-question h3 {
+        font-size: 1rem;
+    }
+    .premium-submit-btn {
+        width: 100%;
     }
 }
