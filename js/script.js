@@ -34,18 +34,30 @@ document.addEventListener('DOMContentLoaded', () => {
         function preloadImages() {
             for (let i = 1; i <= FRAME_COUNT; i++) {
                 const img = new Image();
-                img.src = framePath(i);
+                const primarySrc = framePath(i);
+                img.src = primarySrc;
+                
                 img.onload = () => {
                     loadedCount++;
-                    // Draw the first frame as soon as it loads
-                    if (i === 1 && canvas.width > 0) {
+                    // Draw the first frame as soon as it or frame 1 loads
+                    if (i === 1 || (loadedCount === 1 && canvas.width > 0)) {
                         drawFrame(0);
                     }
-                    // Once all loaded, redraw current frame for clarity
+                    // Once all loaded, refresh ScrollTrigger & redraw current frame
                     if (loadedCount === FRAME_COUNT) {
                         drawFrame(frameObj.frame);
+                        if (typeof ScrollTrigger !== 'undefined') {
+                            ScrollTrigger.refresh();
+                        }
                     }
                 };
+
+                img.onerror = () => {
+                    // Fallback to root directory if subfolder path fails
+                    img.onerror = null;
+                    img.src = `ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
+                };
+
                 images.push(img);
             }
         }
@@ -63,7 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Draw a specific frame index on the canvas (cover fit)
         function drawFrame(index) {
-            const img = images[Math.round(index)];
+            const rounded = Math.round(index);
+            let img = images[rounded];
+
+            // Smart fallback to nearest loaded frame if target frame is still preloading
+            if (!img || !img.complete || img.naturalWidth === 0) {
+                for (let offset = 1; offset < 30; offset++) {
+                    const prev = images[rounded - offset];
+                    if (prev && prev.complete && prev.naturalWidth > 0) { img = prev; break; }
+                    const next = images[rounded + offset];
+                    if (next && next.complete && next.naturalWidth > 0) { img = next; break; }
+                }
+            }
+
             if (!img || !img.complete || img.naturalWidth === 0) return;
 
             const cw = window.innerWidth;
