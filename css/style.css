@@ -226,6 +226,8 @@ img { display: block; max-width: 100%; }
 }
 
 .hero-image {
+    position: absolute;
+    inset: 0;
     width: 100%; height: 100%;
     object-fit: cover; object-position: center 25%;
     transform: scale(1.08);
@@ -250,19 +252,19 @@ img { display: block; max-width: 100%; }
     z-index: 4;
 }
 
-/* ── MASK REVEAL LAYER ───────────────────────────────── */
+/* ── MASK REVEAL LAYER (INK SLIP) ─────────────────────── */
 .hero-image-reveal {
     position: absolute;
     inset: 0;
     z-index: 3;
-    -webkit-mask-image: radial-gradient(circle 0px at -100px -100px, black 99%, transparent 100%);
-    mask-image: radial-gradient(circle 0px at -100px -100px, black 99%, transparent 100%);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
+    mask: url(#inkSlipMask);
+    -webkit-mask: url(#inkSlipMask);
     pointer-events: none;
 }
 
 .hero-image-reveal .hero-image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -270,7 +272,8 @@ img { display: block; max-width: 100%; }
 }
 
 .hero-image-base {
-    position: relative;
+    position: absolute;
+    inset: 0;
     z-index: 2;
 }
 
@@ -606,7 +609,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ══════════════════════════════════════════════════════════
-   WORK PRINCIPLES SECTION
+   WORK PRINCIPLES SECTION (Figma Frame 72 → Frame 73)
    ══════════════════════════════════════════════════════════ */
 .principles-section {
     background: #ffffff;
@@ -616,6 +619,7 @@ img { display: block; max-width: 100%; }
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     position: relative;
     z-index: 10;
+    overflow: hidden;
 }
 
 .principles-side {
@@ -682,13 +686,181 @@ img { display: block; max-width: 100%; }
     margin: 0;
 }
 
+/* ── PRINCIPLES ROW ITEMS ───────────────────────────────── */
 .principles-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
 }
 
-/* Base Bento Card */
+.principles-row-item {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.row-orange-heading {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: clamp(1.8rem, 3.8vw, 3.2rem);
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 10px 0;
+    transition: text-align 0.5s ease;
+}
+
+.row-orange-heading .accent-letter {
+    color: #e67e22;
+    font-weight: 600;
+}
+
+.row-orange-heading .gradient-text {
+    background: linear-gradient(135deg, #d39e6a 0%, #ecd0b0 50%, #f7e6d5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.row-content-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+.principles-row-item.row-reverse .row-content-wrap {
+    flex-direction: row-reverse;
+}
+
+.row-content-wrap .bento-card {
+    width: clamp(320px, 45vw, 550px);
+    aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+}
+
+.row-desc-text {
+    flex: 1;
+    max-width: 460px;
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.principles-row-item.row-reverse .row-desc-text {
+    transform: translateX(-30px);
+}
+
+.row-desc-text p {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+    line-height: 1.65;
+    color: #c49a6c;
+    margin: 0;
+    font-weight: 400;
+}
+
+.principles-side {
+    width: 15%;
+    position: relative;
+}
+
+.principles-side-text {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: rotate(-90deg) translateX(-50%);
+    transform-origin: left top;
+    font-size: clamp(3rem, 7vw, 7rem);
+    font-weight: 800;
+    color: #e5e5e5;
+    letter-spacing: -2px;
+    white-space: nowrap;
+}
+
+.principles-main {
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.principles-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.principles-title {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin: 0;
+}
+
+.principles-subtexts {
+    display: flex;
+    gap: 40px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.principles-subtexts .subtext-small {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.principles-subtexts .subtext-large {
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+/* ── PRINCIPLES GRID — Alternating Row Layout ──────────── */
+.principles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.principles-row-block {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.principles-row-block.row-reverse {
+    flex-direction: row-reverse;
+}
+
+.principles-row-block .bento-card {
+    flex: 1;
+    min-height: clamp(220px, 28vh, 350px);
+}
+
+.principles-row-desc {
+    flex: 1;
+    padding: 20px 10px;
+}
+
+.principles-row-desc p {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: clamp(1rem, 1.5vw, 1.35rem);
+    line-height: 1.6;
+    color: #c49a6c;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* ── Base Bento Card ───────────────────────────────────── */
 .bento-card {
     position: relative;
     border-radius: 12px;
@@ -805,12 +977,6 @@ img { display: block; max-width: 100%; }
     font-size: 0.85rem !important;
 }
 
-.honesty-icons {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
 .time-tag {
     font-weight: 700;
     font-size: 1.1rem;
@@ -823,43 +989,20 @@ img { display: block; max-width: 100%; }
     line-height: 1;
 }
 
-/* Specific Grid layout - Responsive Auto Layout */
-.card-transparency {
-    grid-column: span 3;
-    min-height: clamp(280px, 35vh, 420px);
+/* ── PRINCIPLES HERO SCROLL ANIMATION ──────────────────── */
+.principles-section .bento-card {
+    will-change: transform, opacity;
 }
 
-.card-smart {
-    grid-column: span 3;
-    min-height: clamp(280px, 35vh, 420px);
+.principles-intro,
+.principles-intro .intro-heading,
+.principles-final .principles-side,
+.principles-final .principles-header,
+.principles-final .principles-row-desc {
+    will-change: transform, opacity;
 }
 
-.card-honesty {
-    grid-column: span 2;
-    min-height: clamp(220px, 25vh, 320px);
-}
-
-.card-value {
-    grid-column: span 2;
-    min-height: clamp(220px, 25vh, 320px);
-}
-
-.bento-col-stacked {
-    grid-column: span 2;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    min-height: clamp(220px, 25vh, 320px);
-}
-
-.card-deadline {
-    flex: 2;
-}
-
-.card-unlicensed {
-    flex: 1;
-}
-
+/* ── RESPONSIVE ────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .principles-side { display: none; }
     .principles-main { width: 100%; }
@@ -867,11 +1010,16 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-    .principles-section { padding: 60px 20px; }
-    .principles-grid { grid-template-columns: 1fr; }
-    .card-transparency, .card-smart, .card-honesty, .card-value, .bento-col-stacked {
-        grid-column: span 1;
+    .principles-final { padding: 60px 20px; }
+    .principles-row-block,
+    .principles-row-block.row-reverse {
+        flex-direction: column;
     }
+    .principles-row-block .bento-card {
+        width: 100%;
+    }
+    .intro-heading { letter-spacing: 3px; }
+    .intro-card-slot { width: 90vw; }
     .card-smart .bottom-left-content { position: relative; bottom: auto; left: auto; padding-top: 20px; }
 }
 

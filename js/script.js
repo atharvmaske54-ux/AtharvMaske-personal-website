@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ══════════════════════════════════════════════════════
-    // MOUSE PARALLAX + MASK REVEAL (TRAIL EFFECT)
+    // MOUSE PARALLAX + NOTH-STYLE INK SLIP CURSOR REVEAL
     // ══════════════════════════════════════════════════════
     const heroImageBase = document.getElementById('heroImageBase');
     const heroImageHelmet = document.getElementById('heroImageHelmet');
@@ -290,81 +290,202 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroTitle = document.getElementById('heroTitle');
     const heroGlowOrb = document.getElementById('heroGlowOrb');
     const ambientGlow = document.getElementById('ambientGlow');
+    const heroCard = document.getElementById('heroCard');
+
+    const inkNodesGroup = document.getElementById('inkSlipNodesGroup');
+    const inkDropletsGroup = document.getElementById('inkSlipDropletsGroup');
 
     let mouseX = 0, mouseY = 0;
     let currentX = 0, currentY = 0;
     let rafId = null;
 
-    // Mask reveal trailing state (5 holes)
-    const NUM_HOLES = 5;
-    const BASE_RADIUS = 160; 
-    let maskTarget = { x: -200, y: -200, r: 0 };
-    let maskPoints = Array.from({ length: NUM_HOLES }).map((_, i) => ({
-        x: -200,
-        y: -200,
-        r: 0,
-        targetRadius: Math.max(0, BASE_RADIUS - (i * 25)) // decreasing sizes
-    }));
+    // Ink Slip Physics State
     let isHoveringImage = false;
+    let hoverAmount = 0; // Smooth 0 to 1 scaling
+    let targetPos = { x: -300, y: -300 };
+    let prevPos = { x: -300, y: -300 };
+    let velocity = { x: 0, y: 0, speed: 0, angle: 0 };
+
+    // Primary Trail Nodes (6 nodes for liquid ink stream)
+    const NUM_NODES = 6;
+    const BASE_RADIUS = 165; // Generous size for reveal
+    const NODE_SCALE_FACTORS = [1.0, 0.75, 0.55, 0.40, 0.28, 0.18];
+
+    const trailNodes = Array.from({ length: NUM_NODES }).map((_, i) => ({
+        x: -300,
+        y: -300,
+        r: 0,
+        scaleFactor: NODE_SCALE_FACTORS[i],
+        elem: null
+    }));
+
+    // Satellite Micro Splatters (10 droplets orbiting main ink pool)
+    const NUM_SPLATTERS = 10;
+    const splatterDroplets = Array.from({ length: NUM_SPLATTERS }).map((_, i) => {
+        const angle = (i / NUM_SPLATTERS) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
+        const distRatio = 0.7 + Math.random() * 0.4;
+        const baseR = 10 + Math.random() * 18;
+        return {
+            angle,
+            distRatio,
+            baseR,
+            r: 0,
+            elem: null
+        };
+    });
+
+    // Initialize SVG elements inside mask
+    if (inkNodesGroup) {
+        inkNodesGroup.innerHTML = '';
+        trailNodes.forEach((node, i) => {
+            if (i === 0) {
+                // Main blob is an ellipse for velocity stretching
+                const ellipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+                ellipse.setAttribute('fill', 'white');
+                inkNodesGroup.appendChild(ellipse);
+                node.elem = ellipse;
+            } else {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('fill', 'white');
+                inkNodesGroup.appendChild(circle);
+                node.elem = circle;
+            }
+        });
+    }
+
+    if (inkDropletsGroup) {
+        inkDropletsGroup.innerHTML = '';
+        splatterDroplets.forEach(drop => {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('fill', 'white');
+            inkDropletsGroup.appendChild(circle);
+            drop.elem = circle;
+        });
+    }
 
     function onMouseMove(e) {
         const rect = heroCard ? heroCard.getBoundingClientRect() : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
         mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
         mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
 
-        // Update mask position relative to the image container
         if (heroImageContainer && isHoveringImage) {
             const imgRect = heroImageContainer.getBoundingClientRect();
-            maskTarget.x = e.clientX - imgRect.left;
-            maskTarget.y = e.clientY - imgRect.top;
+            targetPos.x = e.clientX - imgRect.left;
+            targetPos.y = e.clientY - imgRect.top;
         }
     }
 
     if (heroCard) {
-        heroCard.addEventListener('mouseenter', () => {
+        heroCard.addEventListener('mouseenter', (e) => {
             isHoveringImage = true;
-            maskTarget.r = 1; 
+            if (heroImageContainer) {
+                const imgRect = heroImageContainer.getBoundingClientRect();
+                targetPos.x = e.clientX - imgRect.left;
+                targetPos.y = e.clientY - imgRect.top;
+                // Snap nodes near cursor on initial entry
+                trailNodes.forEach(node => {
+                    node.x = targetPos.x;
+                    node.y = targetPos.y;
+                });
+            }
         });
         heroCard.addEventListener('mouseleave', () => {
             isHoveringImage = false;
-            maskTarget.r = 0;
         });
     }
 
     function animateParallax() {
+        // Parallax smooth interpolation
         currentX += (mouseX - currentX) * 0.06;
         currentY += (mouseY - currentY) * 0.06;
 
-        // Parallax transforms applied to BOTH images so they are identically sized
-        const transformStringBase = `scale(1) translate(${currentX * -12}px, ${currentY * -8}px)`;
-        const transformStringHelmet = `scale(1) translate(${currentX * -12}px, ${currentY * -8}px)`;
+        // Perfectly aligned transforms applied to BOTH images
+        const transformString = `scale(1.04) translate(${currentX * -12}px, ${currentY * -8}px)`;
         
-        if (heroImageBase) heroImageBase.style.transform = transformStringBase;
-        if (heroImageHelmet) heroImageHelmet.style.transform = transformStringHelmet;
+        if (heroImageBase) heroImageBase.style.transform = transformString;
+        if (heroImageHelmet) heroImageHelmet.style.transform = transformString;
 
         if (heroTitle) heroTitle.style.transform = `translate(${currentX * 8}px, ${currentY * 5}px)`;
         if (heroGlowOrb) heroGlowOrb.style.transform = `translate(${currentX * 20}px, ${currentY * 15}px)`;
         if (ambientGlow) ambientGlow.style.transform = `translate(${currentX * 30}px, ${currentY * 25}px)`;
 
-        // Smooth mask reveal trailing animation
-        if (heroImageReveal) {
-            // First point follows target cursor
-            maskPoints[0].x += (maskTarget.x - maskPoints[0].x) * 0.2;
-            maskPoints[0].y += (maskTarget.y - maskPoints[0].y) * 0.2;
-            maskPoints[0].r += ((maskTarget.r * maskPoints[0].targetRadius) - maskPoints[0].r) * 0.15;
+        // Calculate cursor velocity & angle
+        const vx = targetPos.x - prevPos.x;
+        const vy = targetPos.y - prevPos.y;
+        const rawSpeed = Math.hypot(vx, vy);
+        velocity.speed += (rawSpeed - velocity.speed) * 0.2;
+        if (rawSpeed > 0.5) {
+            velocity.angle = Math.atan2(vy, vx);
+        }
+        prevPos.x = targetPos.x;
+        prevPos.y = targetPos.y;
 
-            // Rest of the points follow the previous point to create a trail
-            for (let i = 1; i < NUM_HOLES; i++) {
-                maskPoints[i].x += (maskPoints[i - 1].x - maskPoints[i].x) * 0.35;
-                maskPoints[i].y += (maskPoints[i - 1].y - maskPoints[i].y) * 0.35;
-                maskPoints[i].r += ((maskTarget.r * maskPoints[i].targetRadius) - maskPoints[i].r) * 0.15;
+        // Interpolate hover scale factor
+        const targetHover = isHoveringImage ? 1 : 0;
+        hoverAmount += (targetHover - hoverAmount) * 0.12;
+
+        // Update Ink Slip physics
+        if (hoverAmount > 0.001) {
+            // Node 0 follows target cursor
+            trailNodes[0].x += (targetPos.x - trailNodes[0].x) * 0.28;
+            trailNodes[0].y += (targetPos.y - trailNodes[0].y) * 0.28;
+            trailNodes[0].r = hoverAmount * BASE_RADIUS * trailNodes[0].scaleFactor;
+
+            // Rest of nodes follow the previous node to form liquid trail stream
+            for (let i = 1; i < NUM_NODES; i++) {
+                trailNodes[i].x += (trailNodes[i - 1].x - trailNodes[i].x) * 0.38;
+                trailNodes[i].y += (trailNodes[i - 1].y - trailNodes[i].y) * 0.38;
+                trailNodes[i].r = hoverAmount * BASE_RADIUS * trailNodes[i].scaleFactor;
             }
 
-            // Build multiple radial gradients for the trailing effect
-            const gradients = maskPoints.map(p => `radial-gradient(circle ${p.r}px at ${p.x}px ${p.y}px, black 99%, transparent 100%)`).join(', ');
-            
-            heroImageReveal.style.webkitMaskImage = gradients;
-            heroImageReveal.style.maskImage = gradients;
+            // Render Node 0 as elongated ink ellipse when moving
+            if (trailNodes[0].elem) {
+                const stretch = Math.min(velocity.speed * 0.025, 0.7);
+                const rx = trailNodes[0].r * (1 + stretch);
+                const ry = Math.max(10, trailNodes[0].r / (1 + stretch * 0.5));
+                const rotDeg = velocity.angle * (180 / Math.PI);
+
+                trailNodes[0].elem.setAttribute('cx', trailNodes[0].x.toFixed(1));
+                trailNodes[0].elem.setAttribute('cy', trailNodes[0].y.toFixed(1));
+                trailNodes[0].elem.setAttribute('rx', rx.toFixed(1));
+                trailNodes[0].elem.setAttribute('ry', ry.toFixed(1));
+                trailNodes[0].elem.setAttribute('transform', `rotate(${rotDeg.toFixed(1)} ${trailNodes[0].x.toFixed(1)} ${trailNodes[0].y.toFixed(1)})`);
+            }
+
+            // Render Trail Circles (Nodes 1..N-1)
+            for (let i = 1; i < NUM_NODES; i++) {
+                if (trailNodes[i].elem) {
+                    trailNodes[i].elem.setAttribute('cx', trailNodes[i].x.toFixed(1));
+                    trailNodes[i].elem.setAttribute('cy', trailNodes[i].y.toFixed(1));
+                    trailNodes[i].elem.setAttribute('r', trailNodes[i].r.toFixed(1));
+                }
+            }
+
+            // Render Satellite Micro Splatters
+            splatterDroplets.forEach(drop => {
+                const currentDist = (trailNodes[0].r * drop.distRatio) + (velocity.speed * 0.4);
+                const dropX = trailNodes[0].x + Math.cos(drop.angle) * currentDist;
+                const dropY = trailNodes[0].y + Math.sin(drop.angle) * currentDist;
+                drop.r = hoverAmount * drop.baseR;
+
+                if (drop.elem) {
+                    drop.elem.setAttribute('cx', dropX.toFixed(1));
+                    drop.elem.setAttribute('cy', dropY.toFixed(1));
+                    drop.elem.setAttribute('r', drop.r.toFixed(1));
+                }
+            });
+
+            // Dual radial-gradient CSS mask fallback string for ultra-smooth rendering
+            if (heroImageReveal) {
+                const gradientList = trailNodes.map(p => `radial-gradient(circle ${p.r.toFixed(0)}px at ${p.x.toFixed(0)}px ${p.y.toFixed(0)}px, black 99%, transparent 100%)`).join(', ');
+                heroImageReveal.style.webkitMaskImage = gradientList;
+                heroImageReveal.style.maskImage = gradientList;
+            }
+        } else {
+            if (heroImageReveal) {
+                heroImageReveal.style.webkitMaskImage = 'none';
+                heroImageReveal.style.maskImage = 'none';
+            }
         }
 
         rafId = requestAnimationFrame(animateParallax);
