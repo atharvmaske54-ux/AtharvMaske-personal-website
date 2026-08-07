@@ -392,16 +392,22 @@ document.addEventListener('DOMContentLoaded', () => {
         mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
         mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
 
-        if (heroImageContainer && isHoveringImage) {
+        if (heroImageContainer) {
             const imgRect = heroImageContainer.getBoundingClientRect();
-            targetPos.x = e.clientX - imgRect.left;
-            targetPos.y = e.clientY - imgRect.top;
+            // Check if cursor is over or near the hero image container
+            if (e.clientX >= imgRect.left && e.clientX <= imgRect.right &&
+                e.clientY >= imgRect.top && e.clientY <= imgRect.bottom) {
+                isHoveringImage = true;
+                targetPos.x = e.clientX - imgRect.left;
+                targetPos.y = e.clientY - imgRect.top;
+            } else {
+                isHoveringImage = false;
+            }
         }
     }
 
     if (heroCard) {
         heroCard.addEventListener('mouseenter', (e) => {
-            isHoveringImage = true;
             if (heroImageContainer) {
                 const imgRect = heroImageContainer.getBoundingClientRect();
                 targetPos.x = e.clientX - imgRect.left;
@@ -414,6 +420,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         heroCard.addEventListener('mouseleave', () => {
+            isHoveringImage = false;
+        });
+    }
+
+    if (heroImageContainer) {
+        heroImageContainer.addEventListener('mouseenter', (e) => {
+            isHoveringImage = true;
+            const imgRect = heroImageContainer.getBoundingClientRect();
+            targetPos.x = e.clientX - imgRect.left;
+            targetPos.y = e.clientY - imgRect.top;
+            trailNodes.forEach(node => {
+                node.x = targetPos.x;
+                node.y = targetPos.y;
+            });
+        });
+        heroImageContainer.addEventListener('mouseleave', () => {
             isHoveringImage = false;
         });
     }
@@ -448,77 +470,60 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetHover = isHoveringImage ? 1 : 0;
         hoverAmount += (targetHover - hoverAmount) * 0.12;
 
-        // Update Ink Slip physics
-        if (hoverAmount > 0.001) {
-            // Node 0 follows target cursor
-            trailNodes[0].x += (targetPos.x - trailNodes[0].x) * 0.28;
-            trailNodes[0].y += (targetPos.y - trailNodes[0].y) * 0.28;
-            trailNodes[0].r = hoverAmount * BASE_RADIUS * trailNodes[0].scaleFactor;
+        // Node 0 follows target cursor
+        trailNodes[0].x += (targetPos.x - trailNodes[0].x) * 0.28;
+        trailNodes[0].y += (targetPos.y - trailNodes[0].y) * 0.28;
+        trailNodes[0].r = hoverAmount * BASE_RADIUS * trailNodes[0].scaleFactor;
 
-            // Rest of nodes follow the previous node to form liquid trail stream
-            for (let i = 1; i < NUM_NODES; i++) {
-                trailNodes[i].x += (trailNodes[i - 1].x - trailNodes[i].x) * 0.38;
-                trailNodes[i].y += (trailNodes[i - 1].y - trailNodes[i].y) * 0.38;
-                trailNodes[i].r = hoverAmount * BASE_RADIUS * trailNodes[i].scaleFactor;
-            }
+        // Rest of nodes follow the previous node to form liquid trail stream
+        for (let i = 1; i < NUM_NODES; i++) {
+            trailNodes[i].x += (trailNodes[i - 1].x - trailNodes[i].x) * 0.38;
+            trailNodes[i].y += (trailNodes[i - 1].y - trailNodes[i].y) * 0.38;
+            trailNodes[i].r = hoverAmount * BASE_RADIUS * trailNodes[i].scaleFactor;
+        }
 
-            // Render Node 0 as elongated ink ellipse when moving
-            if (trailNodes[0].elem) {
-                const stretch = Math.min(velocity.speed * 0.025, 0.7);
-                const rx = trailNodes[0].r * (1 + stretch);
-                const ry = Math.max(10, trailNodes[0].r / (1 + stretch * 0.5));
-                const rotDeg = velocity.angle * (180 / Math.PI);
+        // Render Node 0 as elongated ink ellipse when moving
+        if (trailNodes[0].elem) {
+            const stretch = Math.min(velocity.speed * 0.025, 0.7);
+            const rx = Math.max(0, trailNodes[0].r * (1 + stretch));
+            const ry = Math.max(0, trailNodes[0].r / (1 + stretch * 0.5));
+            const rotDeg = velocity.angle * (180 / Math.PI);
 
-                trailNodes[0].elem.setAttribute('cx', trailNodes[0].x.toFixed(1));
-                trailNodes[0].elem.setAttribute('cy', trailNodes[0].y.toFixed(1));
-                trailNodes[0].elem.setAttribute('rx', rx.toFixed(1));
-                trailNodes[0].elem.setAttribute('ry', ry.toFixed(1));
-                trailNodes[0].elem.setAttribute('transform', `rotate(${rotDeg.toFixed(1)} ${trailNodes[0].x.toFixed(1)} ${trailNodes[0].y.toFixed(1)})`);
-            }
+            trailNodes[0].elem.setAttribute('cx', trailNodes[0].x.toFixed(1));
+            trailNodes[0].elem.setAttribute('cy', trailNodes[0].y.toFixed(1));
+            trailNodes[0].elem.setAttribute('rx', rx.toFixed(1));
+            trailNodes[0].elem.setAttribute('ry', ry.toFixed(1));
+            trailNodes[0].elem.setAttribute('transform', `rotate(${rotDeg.toFixed(1)} ${trailNodes[0].x.toFixed(1)} ${trailNodes[0].y.toFixed(1)})`);
+        }
 
-            // Render Trail Circles (Nodes 1..N-1)
-            for (let i = 1; i < NUM_NODES; i++) {
-                if (trailNodes[i].elem) {
-                    trailNodes[i].elem.setAttribute('cx', trailNodes[i].x.toFixed(1));
-                    trailNodes[i].elem.setAttribute('cy', trailNodes[i].y.toFixed(1));
-                    trailNodes[i].elem.setAttribute('r', trailNodes[i].r.toFixed(1));
-                }
-            }
-
-            // Render Satellite Micro Splatters
-            splatterDroplets.forEach(drop => {
-                const currentDist = (trailNodes[0].r * drop.distRatio) + (velocity.speed * 0.4);
-                const dropX = trailNodes[0].x + Math.cos(drop.angle) * currentDist;
-                const dropY = trailNodes[0].y + Math.sin(drop.angle) * currentDist;
-                drop.r = hoverAmount * drop.baseR;
-
-                if (drop.elem) {
-                    drop.elem.setAttribute('cx', dropX.toFixed(1));
-                    drop.elem.setAttribute('cy', dropY.toFixed(1));
-                    drop.elem.setAttribute('r', drop.r.toFixed(1));
-                }
-            });
-
-            // Dual radial-gradient CSS mask fallback string for ultra-smooth rendering
-            if (heroImageReveal) {
-                const gradientList = trailNodes.map(p => `radial-gradient(circle ${p.r.toFixed(0)}px at ${p.x.toFixed(0)}px ${p.y.toFixed(0)}px, black 99%, transparent 100%)`).join(', ');
-                heroImageReveal.style.webkitMaskImage = gradientList;
-                heroImageReveal.style.maskImage = gradientList;
-            }
-        } else {
-            if (heroImageReveal) {
-                heroImageReveal.style.webkitMaskImage = 'none';
-                heroImageReveal.style.maskImage = 'none';
+        // Render Trail Circles (Nodes 1..N-1)
+        for (let i = 1; i < NUM_NODES; i++) {
+            if (trailNodes[i].elem) {
+                trailNodes[i].elem.setAttribute('cx', trailNodes[i].x.toFixed(1));
+                trailNodes[i].elem.setAttribute('cy', trailNodes[i].y.toFixed(1));
+                trailNodes[i].elem.setAttribute('r', Math.max(0, trailNodes[i].r).toFixed(1));
             }
         }
+
+        // Render Satellite Micro Splatters
+        splatterDroplets.forEach(drop => {
+            const currentDist = (trailNodes[0].r * drop.distRatio) + (velocity.speed * 0.4);
+            const dropX = trailNodes[0].x + Math.cos(drop.angle) * currentDist;
+            const dropY = trailNodes[0].y + Math.sin(drop.angle) * currentDist;
+            drop.r = Math.max(0, hoverAmount * drop.baseR);
+
+            if (drop.elem) {
+                drop.elem.setAttribute('cx', dropX.toFixed(1));
+                drop.elem.setAttribute('cy', dropY.toFixed(1));
+                drop.elem.setAttribute('r', drop.r.toFixed(1));
+            }
+        });
 
         rafId = requestAnimationFrame(animateParallax);
     }
 
-    if (window.matchMedia('(min-width: 768px) and (hover: hover)').matches) {
-        document.addEventListener('mousemove', onMouseMove);
-        animateParallax();
-    }
+    document.addEventListener('mousemove', onMouseMove);
+    animateParallax();
 
     // ══════════════════════════════════════════════════════
     // CLEANUP
